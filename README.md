@@ -1,3 +1,30 @@
+```
+        ╔══════════════════════════════════════╗
+        ║            M I N D  F O R G E        ║
+        ╚══════════════╤═══════════════════════╝
+                       │
+          ┌────────────┼────────────┐
+          │            │            │
+     ┌────▼────┐ ┌─────▼────┐ ┌────▼────┐ ┌─────────┐
+     │ SYSOPS  │ │  SHIELD  │ │  RAZOR  │ │  CLAW   │
+     │  ░░▓▓░░ │ │  ▓▓▓▓▓▓  │ │  ══╪══  │ │  ╔═╗   │
+     │  propose │ │  propose │ │ propose │ │ propose │
+     └────┬────┘ └────┬─────┘ └────┬────┘ └────┬────┘
+          │           │            │            │
+          └─────┬─────┴─────┬──────┘            │
+                │           │                   │
+           ┌────▼───────────▼───────────────────▼────┐
+           │          CROSS-SCORE  ✕  ✕  ✕           │
+           │   Simplicity · Robustness · Security    │
+           │   Maintainability · Correctness         │
+           └─────────────────┬───────────────────────┘
+                             │
+                     ┌───────▼───────┐
+                     │   ★ WINNER ★  │
+                     │  + synthesis  │
+                     └───────────────┘
+```
+
 # Mind Forge
 
 A Claude Code skill that runs structured multi-agent debates. An orchestrator spawns 4 AI personas that propose solutions in parallel, cross-score each other, and the best approach wins by consensus.
