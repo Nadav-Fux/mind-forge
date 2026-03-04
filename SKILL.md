@@ -53,6 +53,38 @@ Pick the preset that best fits the problem. The user can also request custom per
 | **Vault** | Security Architect | Trust boundaries, auth flows | Zero-trust, encrypted-at-rest, scoped tokens | "Internal traffic is safe" thinking |
 | **Sage** | Staff Engineer | Team velocity, maintenance burden | Boring technology, proven patterns | Shiny new tools without migration plans |
 
+### Data (analytics / ML / pipeline decisions)
+| Name | Role | Thinks In | Favors | Skeptical Of |
+|------|------|-----------|--------|--------------|
+| **Flow** | Data Engineer | Pipelines, schemas, idempotency | Batch over stream, schema-on-write | Schema-on-read chaos |
+| **Signal** | Data Scientist | Experiments, statistical rigor | A/B tests, causal inference, clear metrics | Vanity metrics, "the data shows" without p-values |
+| **Prism** | Analytics Eng | Dashboards, self-serve, semantic layer | One source of truth, documented metrics | Ad-hoc queries that become "the system" |
+| **Guard** | Data Privacy | PII, consent, compliance | Anonymization, data minimization, audit logs | "We'll add GDPR later" promises |
+
+### Startup (business / strategy / GTM decisions)
+| Name | Role | Thinks In | Favors | Skeptical Of |
+|------|------|-----------|--------|--------------|
+| **Spark** | Founder/CEO | Vision, velocity, runway | Ship fast, talk to users, iterate | Perfection before launch, analysis paralysis |
+| **Ledger** | CFO | Unit economics, burn rate | Revenue before growth, sustainable CAC | "Growth at all costs" |
+| **Voice** | Head of Marketing | Channels, positioning, narrative | Clear value prop, one message | Feature lists as marketing |
+| **Scale** | CTO | Tech debt ratio, team velocity | Invest in infra when it pays off | Premature scaling |
+
+### Security Audit (threat modeling / hardening)
+| Name | Role | Thinks In | Favors | Skeptical Of |
+|------|------|-----------|--------|--------------|
+| **Red** | Pentester | Attack paths, exploitation chains | Assume breach, prove it's broken | Security theater, checkbox compliance |
+| **Blue** | Defender | Detection, response, forensics | Logging, alerting, incident runbooks | Security by obscurity |
+| **Compliance** | GRC Analyst | Frameworks, controls, evidence | SOC2, ISO27001, documented processes | "We're too small for compliance" |
+| **DevSec** | AppSec Eng | SAST/DAST, dependency scanning | Shift-left, automate in CI | Manual reviews as the only gate |
+
+### Cost Optimization (cloud spend / resources)
+| Name | Role | Thinks In | Favors | Skeptical Of |
+|------|------|-----------|--------|--------------|
+| **Penny** | FinOps | Cost per request, utilization | Right-sizing, spot instances | Over-provisioning "just in case" |
+| **Peak** | Perf Eng | P99 latency, throughput | Profiling before cutting | Cutting resources without measuring |
+| **Arch** | Solutions Architect | Managed vs self-hosted | Managed for non-core, self-host for differentiation | "Build everything" AND "outsource everything" |
+| **Ops** | Platform Eng | Toil reduction, automation | Automate repetitive work | Manual processes "because they work" |
+
 ### Custom
 When the user specifies their own personas, create a table with the same columns: Name, Role, Thinks In, Favors, Skeptical Of.
 

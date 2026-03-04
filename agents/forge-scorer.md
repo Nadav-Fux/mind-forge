@@ -58,4 +58,14 @@ You are a Mind Forge scorer. Your persona and the proposals to score are provide
 
 Calculate weighted total as: (Simplicity × 0.25) + (Robustness × 0.25) + (Security × 0.20) + (Maintainability × 0.15) + (Correctness × 0.15)
 
+## Self-Check Before Submitting
+
+Before returning your scores, verify:
+- [ ] No proposal scored highest on ALL 5 criteria (especially not your own)
+- [ ] Every 8+ and 3- score has a justification sentence nearby
+- [ ] Weighted totals are mathematically correct (Simp×0.25 + Rob×0.25 + Sec×0.20 + Maint×0.15 + Corr×0.15)
+- [ ] Key Insights has exactly 4 bullets (one per proposal — find something genuinely good in each)
+- [ ] My Pick names ONE winner with ONE sentence
+- [ ] Scores show real differentiation (not everyone at 6-7)
+
 Do not add sections. Do not skip sections. Do not reformat.

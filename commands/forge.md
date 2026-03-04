@@ -18,7 +18,12 @@ You are running a structured multi-agent debate. Follow these phases EXACTLY in 
 **Product** (features/UX/roadmap): Pulse, Pixel, Bolt, Lens
 **Architecture** (system design/tech): Atlas, Cache, Vault, Sage
 
-If the user specified custom personas, use those. Each persona needs: Name, Role, Thinks In, Favors, Skeptical Of.
+**Data** (analytics/pipelines/ML): Flow, Signal, Prism, Guard
+**Startup** (business/strategy/GTM): Spark, Ledger, Voice, Scale
+**Security Audit** (threat modeling/hardening): Red, Blue, Compliance, DevSec
+**Cost Optimization** (cloud spend/resources): Penny, Peak, Arch, Ops
+
+If the user specified custom personas, use those. Each persona needs: Name, Role, Thinks In, Favors, Skeptical Of. Full preset definitions are in `references/presets.md`.
 
 4. **Scan the codebase** if the problem involves existing code. Use Glob/Grep/Read to gather relevant file contents, configs, or architecture notes. Include this context in agent prompts.
 
@@ -109,6 +114,15 @@ Stay in character. Be opinionated. Commit to a position — no "it depends."
 
 Wait for all 4 agents to complete. Collect their proposals.
 
+### Proposal Validation
+
+Before proceeding to scoring, check each proposal:
+1. Has all 6 required sections: Approach, Implementation, Pros, Cons, Risk, Effort
+2. Implementation has numbered steps with specific files/commands (not vague)
+3. Cons has at least 2 genuine weaknesses (not strawmen like "might be too simple")
+
+If a proposal is missing sections or too vague, note it in the scoring round context so scorers can penalize it on Correctness.
+
 ## Phase 2: Scoring
 
 Spawn 4 NEW scoring agents in a SINGLE message (all parallel). Each scorer gets ALL proposals.
@@ -161,7 +175,17 @@ One thing each proposal got RIGHT that others missed.
 Winner name + one sentence why.
 ```
 
-Wait for all 4 scorers to complete.
+Wait for all 4 scorers to complete. If a scorer doesn't respond after 60 seconds, proceed with 3/4 scorers (this happened in the Guardian Debate — Shield went unresponsive, results were still valid with 3 judges).
+
+### Score Validation
+
+For each scorer's response, verify:
+1. All 4 proposals have scores (no skipped rows)
+2. Weighted totals are roughly correct (spot-check one: Simp×0.25 + Rob×0.25 + Sec×0.20 + Maint×0.15 + Corr×0.15)
+3. No proposal scored highest on ALL criteria by the same scorer (anti-gaming violation)
+4. Key Insights has 4 bullets, My Pick names one winner
+
+If a scorer violates anti-gaming (scored their own proposal highest on every criterion), note it in the verdict and discount their self-score.
 
 ## Phase 3: Verdict
 
@@ -189,3 +213,13 @@ YOU (the orchestrator) must now:
 1. Send `shutdown_request` to all agents
 2. `TeamDelete`
 3. Present the final result to the user
+
+---
+
+## Reference: Real Debate Example
+
+See `examples/guardian-debate.md` for a complete real-world run:
+- **Problem**: How to protect Docker container patches from being overwritten by updates
+- **Preset**: Infrastructure (Sysops, Shield, Razor, Claw)
+- **Result**: Razor won unanimously (42.7/50) by proving the problem didn't exist — patches were already persistent via bind mounts. Only verification was needed.
+- **Key lesson**: The debate's biggest value was surfacing a false premise that a single agent would have missed.
