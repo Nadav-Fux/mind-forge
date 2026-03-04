@@ -1,169 +1,259 @@
 ---
-name: llm-council
-description: "Multi-agent debate council for architecture decisions. Use when the user asks to debate, compare approaches, run a council, or wants multiple perspectives on a technical decision. Triggers: council, debate, compare approaches, llm council, agent debate, score proposals, multi-agent decision"
+name: mind-forge
+description: "Multi-agent debate forge for decisions. 4 AI personas propose solutions in parallel, cross-score each other, and the best approach wins. Use when the user asks to debate, compare approaches, run a council/forge, or wants multiple perspectives on any decision. Triggers: mind forge, council, debate, forge, compare approaches, score proposals, multi-agent decision, 4 agents, run a council"
 user-invocable: true
 ---
 
-# LLM Council — Multi-Agent Debate Pattern
+# Mind Forge — Multi-Agent Decision Engine
 
-Run a structured debate between 4 AI agents with distinct personas. Each proposes a solution, then they cross-score each other. The best approach wins by consensus.
+You are orchestrating a structured debate between 4 AI agents. Each agent has a distinct persona, proposes a solution, then all agents cross-score every proposal. The highest-scoring approach wins.
 
-## When to Use
+**IMPORTANT**: Follow the phases below exactly. Do not skip phases or improvise the flow.
 
-- Architecture decisions with multiple valid approaches
-- Choosing between tools, frameworks, or patterns
-- Evaluating trade-offs (security vs. simplicity, speed vs. robustness)
-- Any decision where you want more than one perspective
+---
 
-## The 4 Default Personas
+## Phase 0: Understand the Problem
 
-| Name | Role | Focus | Bias | Skeptical Of |
-|------|------|-------|------|--------------|
-| **Sysops** | SRE / Infrastructure | Reliability, observability, automation | Wants monitoring + alerting for everything | Simplicity claims that skip error handling |
-| **Shield** | Security Engineer | Attack surface, secrets, permissions | Wants defense-in-depth | Convenience shortcuts |
-| **Razor** | Minimalist / Pragmatist | Simplicity, fewer moving parts | Wants the least code possible | Over-engineering, premature abstraction |
-| **Claw** | Domain Expert | Deep knowledge of the specific system | Wants technically correct solutions | Generic approaches that ignore domain specifics |
+Before spawning any agents, you MUST:
 
-### Customizing Personas
+1. **Identify the decision** from the user's message or conversation context
+2. **Gather constraints** — what exists already, what can't change, budget/timeline limits
+3. **Choose a council preset** (see below) or let the user pick custom personas
+4. **Scan the codebase** if the decision involves code — use Glob/Grep/Read to understand the current state. Pass relevant file contents to agents so they propose grounded solutions, not generic advice.
 
-The user can request different personas. When they do, assign each:
-- A **name** (short, memorable)
-- A **role** (1-3 words)
-- A **focus area** (what they optimize for)
-- A **bias** (what they tend to favor)
-- A **skepticism** (what they push back on)
+If the problem is unclear, ask the user ONE clarifying question using AskUserQuestion before proceeding.
 
-## Process (4 Phases)
+---
 
-### Phase 1: Frame the Problem
+## Council Presets
 
-Before launching agents, clearly state:
-1. The decision/problem to solve
-2. Key constraints (existing systems, budget, timeline)
-3. What "success" looks like
-4. Any approaches already considered
+Pick the preset that best fits the problem. The user can also request custom personas.
 
-### Phase 2: Parallel Proposals (4 agents simultaneously)
+### Infrastructure (default for ops/devops/system decisions)
+| Name | Role | Thinks In | Favors | Skeptical Of |
+|------|------|-----------|--------|--------------|
+| **Sysops** | SRE | Uptime, runbooks, alerts | Monitoring everything, automated recovery | "It rarely breaks" assumptions |
+| **Shield** | Security Eng | Threat models, attack surface | Defense-in-depth, least privilege, audit trails | Convenience shortcuts, hardcoded secrets |
+| **Razor** | Minimalist | Lines of code, moving parts | Deleting code, reusing existing tools | New abstractions, "just in case" features |
+| **Claw** | Domain Expert | System internals, edge cases | Technically correct solutions using deep knowledge | Generic approaches that miss domain gotchas |
 
-Use `TeamCreate` to create a council team, then spawn 4 agents via the `Agent` tool, each with their persona's system prompt:
+### Product (for feature/UX/roadmap decisions)
+| Name | Role | Thinks In | Favors | Skeptical Of |
+|------|------|-----------|--------|--------------|
+| **Pulse** | Product Manager | User stories, business impact | Shipping fast, validated by data | Perfect engineering without user validation |
+| **Pixel** | UX Designer | Flows, friction, delight | Simplicity for the user, even if complex underneath | "Power user" features that confuse 90% of users |
+| **Bolt** | Backend Eng | APIs, data models, scale | Clean contracts, idempotent operations | Frontend-driven architecture |
+| **Lens** | QA / Test Lead | Edge cases, regressions, coverage | Testable designs, clear acceptance criteria | "We'll test it later" promises |
 
-**Agent Prompt Template (Proposal Phase):**
+### Architecture (for system design / tech choices)
+| Name | Role | Thinks In | Favors | Skeptical Of |
+|------|------|-----------|--------|--------------|
+| **Atlas** | Systems Architect | Boundaries, data flow, contracts | Decoupled services, clear ownership | Monolith-everything or micro-everything dogma |
+| **Cache** | Performance Eng | Latency, throughput, bottlenecks | Measuring before optimizing, efficient data access | Premature optimization AND ignoring obvious hotspots |
+| **Vault** | Security Architect | Trust boundaries, auth flows | Zero-trust, encrypted-at-rest, scoped tokens | "Internal traffic is safe" thinking |
+| **Sage** | Staff Engineer | Team velocity, maintenance burden | Boring technology, proven patterns | Shiny new tools without migration plans |
+
+### Custom
+When the user specifies their own personas, create a table with the same columns: Name, Role, Thinks In, Favors, Skeptical Of.
+
+---
+
+## Phase 1: Launch Proposals (Parallel)
+
+Create a team and spawn exactly 4 agents in a SINGLE message (all 4 Agent tool calls in one response).
+
+**Team setup:**
 ```
-You are {NAME}, a {ROLE} on an LLM Council debate.
+TeamCreate: name="forge-{short-topic}", description="Mind Forge: {problem summary}"
+```
 
-Your focus: {FOCUS}
-Your bias: You tend to favor {BIAS}
-Your skepticism: You push back on {SKEPTICISM}
+**For each agent, use this prompt template** (fill in the persona and problem):
 
-## Problem
+```
+You are **{NAME}**, a {ROLE} on a Mind Forge council.
+
+## Your Lens
+- You think in terms of: {THINKS_IN}
+- You favor: {FAVORS}
+- You are skeptical of: {SKEPTICAL_OF}
+
+## The Problem
 {PROBLEM_DESCRIPTION}
 
 ## Constraints
 {CONSTRAINTS}
 
+## Current System Context
+{RELEVANT_CODE_OR_ARCHITECTURE — include actual file contents, configs, or architecture notes you gathered in Phase 0. If none, write "Greenfield — no existing system."}
+
 ## Your Task
-Propose a concrete solution. Include:
-1. **Approach** (2-3 sentences)
-2. **Implementation** (specific steps, files, commands)
-3. **Pros** (3-5 bullet points)
-4. **Cons** (be honest about weaknesses)
-5. **Risk assessment** (what could go wrong)
+Propose a CONCRETE solution. Not theory — actionable steps.
 
-Stay in character. Be opinionated. Disagree with approaches that conflict with your values.
+Structure your response EXACTLY as:
+
+### Approach
+2-4 sentences. What you'd do and why.
+
+### Implementation
+Numbered steps. Include specific file paths, commands, config changes, or code snippets.
+Be specific enough that someone could execute this without asking questions.
+
+### Pros
+- 3-5 bullet points (be honest, not salesy)
+
+### Cons
+- 2-4 bullet points (genuinely critique your own approach)
+
+### Risk
+What's the worst thing that could happen? How likely is it? What's the mitigation?
+
+### Effort
+Quick estimate: trivial / small (< 1hr) / medium (1-4hr) / large (4hr+)
+
+---
+Stay in character. Be opinionated. Your proposal should clearly reflect your persona's values.
+Do NOT hedge with "it depends" — commit to a position.
 ```
 
-### Phase 3: Cross-Scoring (4 agents simultaneously)
+**Agent settings:**
+- `subagent_type: "general-purpose"` (they may need to read files)
+- `model: "sonnet"` (cost-effective; use `"opus"` only if user requests or problem is very complex)
+- Give each agent a `name` matching the persona (e.g., "sysops", "shield")
 
-After collecting all proposals, launch 4 new agents (or message existing teammates). Each agent scores ALL proposals (including their own) on 5 criteria:
+---
 
-**Scoring Criteria:**
+## Phase 2: Cross-Scoring (Parallel)
 
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| Simplicity | 25% | Fewer moving parts, less code, easier to understand |
-| Robustness | 25% | Handles failures, edge cases, degraded states |
-| Security | 20% | Minimizes attack surface, protects secrets, least privilege |
-| Maintainability | 15% | Easy to modify, debug, hand off to someone else |
-| Correctness | 15% | Actually solves the stated problem completely |
+After ALL 4 proposals are collected, spawn 4 NEW scoring agents in a SINGLE message.
 
-**Agent Prompt Template (Scoring Phase):**
+**Each scoring agent gets ALL proposals and this prompt:**
+
 ```
-You are {NAME}, a {ROLE}.
+You are **{NAME}**, a {ROLE}. You just participated in a Mind Forge debate.
 
-You just participated in a council debate. Here are all 4 proposals:
+## All Proposals
 
-## Proposal 1: {NAME_1} ({ROLE_1})
-{PROPOSAL_1}
+### {NAME_1} ({ROLE_1})
+{FULL_PROPOSAL_1}
 
-## Proposal 2: {NAME_2} ({ROLE_2})
-{PROPOSAL_2}
+### {NAME_2} ({ROLE_2})
+{FULL_PROPOSAL_2}
 
-## Proposal 3: {NAME_3} ({ROLE_3})
-{PROPOSAL_3}
+### {NAME_3} ({ROLE_3})
+{FULL_PROPOSAL_3}
 
-## Proposal 4: {NAME_4} ({ROLE_4})
-{PROPOSAL_4}
+### {NAME_4} ({ROLE_4})
+{FULL_PROPOSAL_4}
 
-## Score each proposal (1-10) on these criteria:
-- Simplicity (25%): Fewer moving parts, less code
-- Robustness (25%): Handles failures and edge cases
-- Security (20%): Minimizes attack surface
-- Maintainability (15%): Easy to modify and debug
-- Correctness (15%): Solves the actual problem
+## Scoring Rules
 
-Format your response as:
+Rate each proposal 1-10 on these criteria:
+
+| Criterion | Weight | What 10/10 Looks Like |
+|-----------|--------|-----------------------|
+| Simplicity | 25% | Fewest moving parts, least code, a junior dev could maintain it |
+| Robustness | 25% | Handles failures gracefully, no silent data loss, works at 3 AM |
+| Security | 20% | Minimal attack surface, no hardcoded secrets, least privilege |
+| Maintainability | 15% | Easy to modify in 6 months, clear structure, good observability |
+| Correctness | 15% | Actually solves the stated problem completely, no gaps |
+
+## Anti-Gaming Rules
+- You MUST NOT score your own proposal highest on every criterion. Find at least one criterion where another proposal genuinely beats yours.
+- If two proposals are genuinely equal on a criterion, give the same score.
+- Justify every score that is 8+ or 3- with one sentence.
+
+## Response Format (follow EXACTLY)
+
 ### Scores
-| Proposal | Simplicity | Robustness | Security | Maintainability | Correctness | Weighted Total |
-|----------|-----------|------------|----------|-----------------|-------------|----------------|
-| {NAME_1} | X/10 | X/10 | X/10 | X/10 | X/10 | X.X |
-| ... | ... | ... | ... | ... | ... | ... |
+| Proposal | Simplicity | Robustness | Security | Maintainability | Correctness | Weighted |
+|----------|-----------|------------|----------|-----------------|-------------|----------|
+| {NAME_1} | X | X | X | X | X | X.XX |
+| {NAME_2} | X | X | X | X | X | X.XX |
+| {NAME_3} | X | X | X | X | X | X.XX |
+| {NAME_4} | X | X | X | X | X | X.XX |
 
-### Reasoning
-Brief explanation for each score. Be fair but stay in character.
+Calculate weighted total as: (Simplicity * 0.25) + (Robustness * 0.25) + (Security * 0.20) + (Maintainability * 0.15) + (Correctness * 0.15)
 
-### Winner
-Who you think should win and why (1 sentence).
+### Key Insights
+One thing each proposal got RIGHT that others missed (4 bullets).
+
+### My Pick
+Winner name + one sentence why.
 ```
 
-### Phase 4: Verdict
+---
 
-After all scores are in:
+## Phase 3: Verdict
 
-1. **Calculate weighted averages** across all 4 scorers for each proposal
-2. **Announce winner** with final scores
-3. **Note consensus** — did all agents agree? Split vote?
-4. **Synthesize** — can the winning approach incorporate good ideas from runners-up?
+After all scores are in, YOU (the orchestrator) must:
 
-**Tie-breaking rules:**
-- If two proposals are within 0.5 points: recommend a hybrid
-- If one proposal wins unanimously (all 4 rank it #1): strong recommendation
-- If votes are evenly split (2-2): present both as viable, ask user to decide
+1. **Build the scoreboard**: Average each proposal's weighted score across all 4 scorers. Present as a table:
 
-## Implementation Notes
+```
+| Proposal | Sysops | Shield | Razor | Claw | AVERAGE | Rank |
+|----------|--------|--------|-------|------|---------|------|
+| ...      | X.XX   | X.XX   | X.XX  | X.XX | X.XX    | #N   |
+```
 
-- Use `subagent_type: "general-purpose"` for all agents
-- Run proposal agents in parallel (single message with 4 Agent tool calls)
-- Run scoring agents in parallel (single message with 4 Agent tool calls)
-- Each agent should have access to: Read, Grep, Glob, Bash (for research)
-- Agents do NOT need Write/Edit access (they're advisors, not implementers)
-- Use `model: "sonnet"` for agents to save cost (opus for complex problems)
+2. **Announce the winner** with the final score and margin of victory.
 
-## Example Invocation
+3. **Check consensus**:
+   - **Unanimous** (all 4 rank the same winner): "Strong consensus — high confidence"
+   - **3-1 split**: "Clear winner with one dissent"
+   - **2-2 split**: "Split council — present both options to user"
+   - **All different**: "No consensus — user must decide"
 
-User: "I need to decide how to handle database migrations in our Next.js app. Options: Prisma Migrate, Drizzle Kit, raw SQL scripts, or Supabase migrations."
+4. **Synthesize**: Look at the "Key Insights" from each scorer. Identify 1-2 ideas from losing proposals that should be incorporated into the winning approach. Present as: "Winning approach + steal X from {loser_name}."
 
-This triggers:
-1. Frame: Next.js app, Supabase backend, team of 2, need reproducible migrations
-2. Propose: 4 agents each argue for their preferred approach
-3. Score: 4 agents rate all proposals on the 5 criteria
-4. Verdict: Weighted average determines winner
+5. **Final recommendation**: One paragraph summarizing what to actually do, combining the winner's plan with any stolen insights.
 
-## Quick Start
+---
 
-When the user says `/council` or asks for a council debate:
+## Phase 4: Cleanup
 
-1. Ask: "What decision do you need help with?" (if not already stated)
-2. Create team: `TeamCreate` with name like "council-{topic}"
-3. Spawn 4 agents with personas + problem context
-4. Collect proposals → run scoring round → announce winner
-5. Clean up: shut down agents, delete team
+1. Shut down all agents: `SendMessage` with `type: "shutdown_request"` to each
+2. Delete the team: `TeamDelete`
+3. Report results to the user
+
+---
+
+## Configuration Options
+
+The user can customize these before or during invocation:
+
+| Option | Default | Alternatives |
+|--------|---------|-------------|
+| Council size | 4 agents | 3 agents (drop one), 5 agents (add a wildcard) |
+| Preset | Infrastructure | Product, Architecture, Custom |
+| Model | sonnet | opus (for complex/high-stakes decisions) |
+| Criteria weights | 25/25/20/15/15 | User can specify custom weights |
+| Codebase scan | Yes (if in a repo) | Skip with "no-scan" |
+
+---
+
+## Edge Cases
+
+- **User provides fewer than 2 options**: Generate options yourself based on the problem space. Always provide at least 3 distinct approaches.
+- **User wants a quick decision**: Skip the team, run 4 Agent tool calls directly (no TeamCreate), collect proposals, score yourself instead of spawning scoring agents. Label this "Quick Forge" mode.
+- **Problem is non-technical**: The pattern works for any decision (hiring strategy, prioritization, naming). Adjust personas to match the domain.
+- **User disagrees with the winner**: The forge is advisory. Present the runner-up as an alternative and explain the trade-off.
+
+---
+
+## Example: Full Flow
+
+**User**: "Should we use Redis, Cloudflare KV, or in-memory LRU for our API cache?"
+
+**Phase 0**: Read the API code, check current caching (if any), note deployment target (Cloudflare Workers? Node.js? Docker?).
+
+**Phase 1**: Spawn 4 agents (Infrastructure preset). Each proposes one approach:
+- Sysops: Redis with Sentinel for HA
+- Shield: Cloudflare KV with encrypted values + TTL
+- Razor: In-memory LRU with 50-line implementation
+- Claw: Hybrid — KV for hot paths, LRU for request-scoped
+
+**Phase 2**: Cross-scoring. Razor gives herself 9 on simplicity but only 5 on robustness. Shield scores Redis highest on robustness but dings it on attack surface.
+
+**Phase 3**: Razor wins 7.8 avg. Synthesize: "Use Razor's LRU but steal Claw's idea of KV for the 3 highest-traffic endpoints."
+
+**Phase 4**: Clean up team, present final recommendation.
