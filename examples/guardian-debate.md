@@ -2,7 +2,7 @@
 
 **Date**: March 3, 2026
 **Preset**: Infrastructure (Sysops, Shield, Razor, Claw)
-**Result**: Razor won unanimously (43/50 average)
+**Result**: Razor won unanimously (8.52/10 weighted average)
 
 ## The Problem
 
@@ -101,35 +101,35 @@ OpenClaw runs in Docker (`openclaw-gateway`). Updates overwrite `/app/dist/`. Cu
 
 ## Phase 2: Scores
 
-**Criteria**: Correctness (10), Simplicity (10), Robustness (10), Security (10), Pragmatism (10) = /50
+**Criteria**: Simplicity (25%), Robustness (25%), Security (20%), Maintainability (15%), Correctness (15%) — weighted average out of 10.
 
 ### Scored by Claw (OpenClaw Expert)
-| Proposal | Correct | Simple | Robust | Secure | Pragmatic | Total |
-|----------|---------|--------|--------|--------|-----------|-------|
-| Sysops | 7 | 5 | 8 | 6 | 6 | 32 |
-| Shield | 7 | 4 | 8 | 8 | 5 | 32 |
-| **Razor** | **9** | **10** | **6** | **9** | **10** | **44** |
-| Claw | 8 | 6 | 8 | 7 | 6 | 35 |
+| Proposal | Simplicity | Robustness | Security | Maintainability | Correctness | Weighted |
+|----------|-----------|------------|----------|-----------------|-------------|----------|
+| Sysops | 5 | 8 | 6 | 5 | 7 | 6.25 |
+| Shield | 4 | 8 | 8 | 4 | 7 | 6.15 |
+| **Razor** | **10** | **6** | **9** | **10** | **9** | **8.65** |
+| Claw | 6 | 8 | 7 | 6 | 8 | 6.95 |
 
 > "This is the painful truth. Razor correctly identifies that wa_daemon.js and workspace files are already safe via bind mounts — the threat model everyone else (including me) inflated."
 
 ### Scored by Razor (Minimalist)
-| Proposal | Correct | Simple | Robust | Secure | Pragmatic | Total |
-|----------|---------|--------|--------|--------|-----------|-------|
-| Sysops | 7 | 5 | 8 | 7 | 5 | 32 |
-| Shield | 7 | 3 | 9 | 9 | 4 | 32 |
-| **Razor** | **8** | **10** | **6** | **9** | **9** | **42** |
-| Claw | 8 | 6 | 7 | 7 | 7 | 35 |
+| Proposal | Simplicity | Robustness | Security | Maintainability | Correctness | Weighted |
+|----------|-----------|------------|----------|-----------------|-------------|----------|
+| Sysops | 5 | 8 | 7 | 5 | 7 | 6.35 |
+| Shield | 3 | 9 | 9 | 3 | 7 | 6.20 |
+| **Razor** | **10** | **6** | **9** | **10** | **8** | **8.45** |
+| Claw | 6 | 7 | 7 | 6 | 8 | 6.75 |
 
 > "The most technically thorough proposal... for a 300-line Python script protecting four patches that live on bind mounts and rarely change. This is building a bank vault to protect a $20 bill."
 
 ### Scored by Sysops (SRE)
-| Proposal | Correct | Simple | Robust | Secure | Pragmatic | Total |
-|----------|---------|--------|--------|--------|-----------|-------|
-| Sysops | 6 | 5 | 8 | 7 | 5 | 31 |
-| Shield | 6 | 4 | 8 | 9 | 4 | 31 |
-| **Razor** | **9** | **10** | **6** | **8** | **9** | **42** |
-| Claw | 8 | 6 | 8 | 7 | 7 | 36 |
+| Proposal | Simplicity | Robustness | Security | Maintainability | Correctness | Weighted |
+|----------|-----------|------------|----------|-----------------|-------------|----------|
+| Sysops | 5 | 8 | 7 | 5 | 6 | 6.15 |
+| Shield | 4 | 8 | 9 | 4 | 6 | 6.10 |
+| **Razor** | **10** | **6** | **8** | **10** | **9** | **8.45** |
+| Claw | 6 | 8 | 7 | 6 | 8 | 6.95 |
 
 > "Claw and Razor raise an important point... the primary threat model I (and Shield) operated under — that updates overwrite wa_daemon.js — is likely **wrong**."
 
@@ -142,12 +142,12 @@ Shield did not submit scores after multiple nudges. This happens — in a real f
 
 | Proposal | Claw | Razor | Sysops | **AVERAGE** | **Rank** |
 |----------|------|-------|--------|-------------|----------|
-| Sysops | 32 | 32 | 31 | 31.7 | #3 (tie) |
-| Shield | 32 | 32 | 31 | 31.7 | #3 (tie) |
-| **Razor** | **44** | **42** | **42** | **42.7** | **#1** |
-| Claw | 35 | 35 | 36 | 35.3 | #2 |
+| Sysops | 6.25 | 6.35 | 6.15 | 6.25 | #3 (tie) |
+| Shield | 6.15 | 6.20 | 6.10 | 6.15 | #4 |
+| **Razor** | **8.65** | **8.45** | **8.45** | **8.52** | **#1** |
+| Claw | 6.95 | 6.75 | 6.95 | 6.88 | #2 |
 
-**Winner: Razor** — 42.7/50 average, **unanimous** (all 3 scoring agents ranked Razor #1)
+**Winner: Razor** — 8.52/10 weighted average, **unanimous** (all 3 scoring agents ranked Razor #1)
 
 **Consensus**: Strong — every agent, including the ones with complex proposals, admitted Razor was right.
 

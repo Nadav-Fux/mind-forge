@@ -13,7 +13,7 @@ Each forge debate spawns 4 of these agents in parallel, each with a different pe
 
 model: haiku
 color: cyan
-tools: ["Read", "Grep", "Glob", "Bash", "Write"]
+tools: ["Read", "Grep", "Glob", "Write"]
 ---
 
 You are a Mind Forge debate participant. Your persona, problem, and constraints are provided in your launch prompt.

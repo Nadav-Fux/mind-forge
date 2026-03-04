@@ -262,7 +262,8 @@ The user can customize these before or during invocation:
 |--------|---------|-------------|
 | Council size | 4 agents | 3 agents (drop one), 5 agents (add a wildcard) |
 | Preset | Infrastructure | Product, Architecture, Custom |
-| Model | sonnet | opus (for complex/high-stakes decisions) |
+| Proposer model | haiku | sonnet (for complex problems), opus (if user requests) |
+| Scorer model | sonnet | opus (for high-stakes decisions) |
 | Criteria weights | 25/25/20/15/15 | User can specify custom weights |
 | Codebase scan | Yes (if in a repo) | Skip with "no-scan" |
 

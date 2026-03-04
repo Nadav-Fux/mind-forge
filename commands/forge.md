@@ -117,7 +117,7 @@ trivial / small (< 1hr) / medium (1-4hr) / large (4hr+)
 Stay in character. Be opinionated. Commit to a position — no "it depends."
 
 **IMPORTANT**: After writing your proposal, save it to a file:
-Write your full proposal to `/tmp/forge-{TOPIC}/proposals/{YOUR_NAME}.md`
+Write your full proposal to `/tmp/forge-{short-topic}/proposals/{YOUR_NAME}.md`
 ```
 
 Wait for all 4 agents to complete. Read each proposal from `/tmp/forge-{short-topic}/proposals/`.
@@ -166,7 +166,7 @@ You are **{NAME}**, a {ROLE}. You just participated in a Mind Forge debate.
 | Correctness | 15% | Fully solves the problem |
 
 ## Anti-Gaming Rules
-- Do NOT score your own proposal highest on every criterion
+- Do NOT give the same proposal the highest score on every criterion
 - Justify any score 8+ or 3- with one sentence
 - Differentiate — don't give everyone similar scores
 
@@ -195,7 +195,7 @@ For each scorer's response, verify:
 3. No proposal scored highest on ALL criteria by the same scorer (anti-gaming violation)
 4. Key Insights has 4 bullets, My Pick names one winner
 
-If a scorer violates anti-gaming (scored their own proposal highest on every criterion), note it in the verdict and discount their self-score.
+If a scorer violates anti-gaming (gave one proposal the highest score on every criterion), note it in the verdict and consider discounting that scorer.
 
 ## Phase 3: Verdict
 
@@ -208,8 +208,8 @@ YOU (the orchestrator) must now:
 
 2. **Announce the winner** with score and margin.
 
-3. **Check consensus**:
-   - Unanimous (all 4 pick same winner): "Strong consensus"
+3. **Check consensus** (based on which proposal each scorer ranked highest by weighted score, NOT the "My Pick" field):
+   - Unanimous (all 4 rank same proposal #1): "Strong consensus"
    - 3-1: "Clear winner, one dissent"
    - 2-2: "Split — present both to user"
    - All different: "No consensus — user decides"
@@ -220,7 +220,8 @@ YOU (the orchestrator) must now:
 
 ## Phase 4: Archive & Cleanup
 
-1. **Save session archive** to `~/.claude/forge-sessions/{YYYY-MM-DD}-{short-topic}.md`:
+1. **Create archive directory** if it doesn't exist: `mkdir -p ~/.claude/forge-sessions/`
+2. **Save session archive** to `~/.claude/forge-sessions/{YYYY-MM-DD}-{short-topic}.md`:
 
 ```markdown
 # Mind Forge: {Topic}
@@ -246,10 +247,10 @@ YOU (the orchestrator) must now:
 {final one-paragraph recommendation}
 ```
 
-2. **Cleanup coordination folder**: `rm -rf /tmp/forge-{short-topic}/`
-3. Send `shutdown_request` to all agents
-4. `TeamDelete`
-5. Present the final result to the user
+3. **Cleanup coordination folder**: `rm -rf /tmp/forge-{short-topic}/`
+4. Send `shutdown_request` to all agents
+5. `TeamDelete`
+6. Present the final result to the user
 
 **Note**: The archive at `~/.claude/forge-sessions/` persists across sessions. Users can reference past debates with: `ls ~/.claude/forge-sessions/`
 
@@ -260,5 +261,5 @@ YOU (the orchestrator) must now:
 See `examples/guardian-debate.md` for a complete real-world run:
 - **Problem**: How to protect Docker container patches from being overwritten by updates
 - **Preset**: Infrastructure (Sysops, Shield, Razor, Claw)
-- **Result**: Razor won unanimously (42.7/50) by proving the problem didn't exist — patches were already persistent via bind mounts. Only verification was needed.
+- **Result**: Razor won unanimously (8.52/10) by proving the problem didn't exist — patches were already persistent via bind mounts. Only verification was needed.
 - **Key lesson**: The debate's biggest value was surfacing a false premise that a single agent would have missed.

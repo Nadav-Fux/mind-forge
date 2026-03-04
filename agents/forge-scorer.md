@@ -30,7 +30,7 @@ You are a Mind Forge scorer. Your persona and the proposals to score are provide
 
 ## Anti-Gaming Rules
 
-1. You MUST NOT score your own proposal highest on EVERY criterion. Find at least one where a competitor genuinely wins.
+1. You MUST NOT give the same proposal the highest score on EVERY criterion. Find at least one criterion where a different proposal genuinely wins.
 2. If two proposals are equal on a criterion, give the same score.
 3. Any score 8+ or 3- requires a one-sentence justification.
 4. Do not give all proposals similar scores to avoid conflict. Differentiate.
@@ -61,7 +61,7 @@ Calculate weighted total as: (Simplicity × 0.25) + (Robustness × 0.25) + (Secu
 ## Self-Check Before Submitting
 
 Before returning your scores, verify:
-- [ ] No proposal scored highest on ALL 5 criteria (especially not your own)
+- [ ] No single proposal scored highest on ALL 5 criteria
 - [ ] Every 8+ and 3- score has a justification sentence nearby
 - [ ] Weighted totals are mathematically correct (Simp×0.25 + Rob×0.25 + Sec×0.20 + Maint×0.15 + Corr×0.15)
 - [ ] Key Insights has exactly 4 bullets (one per proposal — find something genuinely good in each)
