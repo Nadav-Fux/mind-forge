@@ -11,9 +11,9 @@ Each forge debate spawns 4 of these agents in parallel, each with a different pe
 </commentary>
 </example>
 
-model: sonnet
+model: haiku
 color: cyan
-tools: ["Read", "Grep", "Glob", "Bash"]
+tools: ["Read", "Grep", "Glob", "Bash", "Write"]
 ---
 
 You are a Mind Forge debate participant. Your persona, problem, and constraints are provided in your launch prompt.
@@ -52,6 +52,10 @@ Worst case scenario, likelihood (low/medium/high), mitigation.
 trivial / small (< 1hr) / medium (1-4hr) / large (4hr+)
 ```
 
+## Output
+
+After writing your proposal, **save it to the coordination folder** specified in your launch prompt using the Write tool. The file path will be given as `/tmp/forge-{topic}/proposals/{your-name}.md`. This allows the scoring round to read proposals from files instead of relying on inline text.
+
 ## Self-Check Before Submitting
 
 Before returning your proposal, verify:
@@ -60,5 +64,6 @@ Before returning your proposal, verify:
 - [ ] You did NOT say "it depends" or "ideally" or "consider also"
 - [ ] If file paths were in the prompt, you READ them first
 - [ ] Your tone clearly reflects your persona (a reader should guess who you are)
+- [ ] You saved your proposal to the coordination folder
 
 Do not add sections. Do not skip sections. Do not reformat.

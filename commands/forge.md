@@ -57,15 +57,20 @@ If the user specified custom personas, use those. Each persona needs: Name, Role
 
 ## Phase 1: Proposals
 
-Create a team and spawn 4 proposer agents in a SINGLE message (all parallel).
+Create a team, set up the coordination folder, and spawn 4 proposer agents in a SINGLE message (all parallel).
 
 ```
 TeamCreate: name="forge-{short-topic}"
 ```
 
+**Coordination folder** — create before spawning agents:
+```bash
+mkdir -p /tmp/forge-{short-topic}/proposals
+```
+
 For each agent, use the Agent tool with these settings:
 - `subagent_type: "general-purpose"`
-- `model: "sonnet"` (or "opus" if user requested or problem is very complex)
+- `model: "haiku"` (cost-effective for proposals; use `"sonnet"` if problem is complex, `"opus"` only if user requests)
 - `name: "{persona-name}"` (lowercase, e.g., "sysops", "shield")
 - `team_name: "forge-{short-topic}"`
 
@@ -110,9 +115,12 @@ Worst case, likelihood, mitigation.
 trivial / small (< 1hr) / medium (1-4hr) / large (4hr+)
 
 Stay in character. Be opinionated. Commit to a position — no "it depends."
+
+**IMPORTANT**: After writing your proposal, save it to a file:
+Write your full proposal to `/tmp/forge-{TOPIC}/proposals/{YOUR_NAME}.md`
 ```
 
-Wait for all 4 agents to complete. Collect their proposals.
+Wait for all 4 agents to complete. Read each proposal from `/tmp/forge-{short-topic}/proposals/`.
 
 ### Proposal Validation
 
@@ -125,7 +133,9 @@ If a proposal is missing sections or too vague, note it in the scoring round con
 
 ## Phase 2: Scoring
 
-Spawn 4 NEW scoring agents in a SINGLE message (all parallel). Each scorer gets ALL proposals.
+Read all proposals from `/tmp/forge-{short-topic}/proposals/` (one file per agent). Then spawn 4 NEW scoring agents in a SINGLE message (all parallel). Each scorer gets ALL proposals.
+
+Scoring agents use `model: "sonnet"` (need stronger judgment for fair scoring).
 
 Prompt template:
 
@@ -208,11 +218,40 @@ YOU (the orchestrator) must now:
 
 5. **Final recommendation**: One clear paragraph of what to actually do.
 
-## Phase 4: Cleanup
+## Phase 4: Archive & Cleanup
 
-1. Send `shutdown_request` to all agents
-2. `TeamDelete`
-3. Present the final result to the user
+1. **Save session archive** to `~/.claude/forge-sessions/{YYYY-MM-DD}-{short-topic}.md`:
+
+```markdown
+# Mind Forge: {Topic}
+**Date**: {YYYY-MM-DD}
+**Preset**: {preset name} ({agent names})
+**Result**: {Winner} won {consensus type} ({score}/10 average)
+
+## Problem
+{problem statement}
+
+## Proposals
+{all 4 proposals — copy from coordination folder}
+
+## Scoreboard
+{final scoreboard table}
+
+## Verdict
+**Winner**: {name} — {score}
+**Consensus**: {unanimous/3-1/2-2/split}
+**Synthesis**: {winner's approach + stolen ideas}
+
+## Recommendation
+{final one-paragraph recommendation}
+```
+
+2. **Cleanup coordination folder**: `rm -rf /tmp/forge-{short-topic}/`
+3. Send `shutdown_request` to all agents
+4. `TeamDelete`
+5. Present the final result to the user
+
+**Note**: The archive at `~/.claude/forge-sessions/` persists across sessions. Users can reference past debates with: `ls ~/.claude/forge-sessions/`
 
 ---
 

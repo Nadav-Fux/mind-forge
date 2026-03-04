@@ -26,15 +26,15 @@ Full transcript with scores: [`examples/guardian-debate.md`](examples/guardian-d
    │
    ├─ Phase 0: Orchestrator scans codebase, picks preset
    │
-   ├─ Phase 1: 4 × forge-proposer agents (parallel)
-   │     Each proposes with: Approach, Implementation, Pros, Cons, Risk, Effort
+   ├─ Phase 1: 4 × forge-proposer agents (haiku, parallel)
+   │     Each proposes → saves to /tmp/forge-{topic}/proposals/{name}.md
    │
-   ├─ Phase 2: 4 × forge-scorer agents (parallel)
-   │     Each scores all proposals 1-10 on 5 criteria (anti-gaming enforced)
+   ├─ Phase 2: 4 × forge-scorer agents (sonnet, parallel)
+   │     Reads proposals from coordination folder, scores 1-10 on 5 criteria
    │
    ├─ Phase 3: Orchestrator validates scores → scoreboard → winner + synthesis
    │
-   └─ Phase 4: Cleanup (shutdown agents, delete team)
+   └─ Phase 4: Archive to ~/.claude/forge-sessions/ → cleanup
 ```
 
 ### Components
@@ -83,6 +83,17 @@ Agents are encouraged to challenge the problem statement itself. The most valuab
 
 ### Synthesis
 The winner doesn't just win — best ideas from losers get folded into the final recommendation.
+
+### Session Archive
+Every debate is saved to `~/.claude/forge-sessions/{date}-{topic}.md` with the full transcript, scores, and recommendation. Reference past decisions with `ls ~/.claude/forge-sessions/`.
+
+### Smart Model Strategy
+- **Proposers** use `haiku` — fast and cheap for generating opinionated proposals
+- **Scorers** use `sonnet` — stronger reasoning for fair cross-evaluation
+- Use `--model=opus` for high-stakes decisions that need maximum depth
+
+### Coordination Folder
+Proposals are written to `/tmp/forge-{topic}/proposals/` as files instead of passed inline. This is more reliable for large proposals and lets scorers read exactly what was written without truncation.
 
 ## Install
 

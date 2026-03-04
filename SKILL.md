@@ -149,14 +149,17 @@ Do NOT hedge with "it depends" — commit to a position.
 
 **Agent settings:**
 - `subagent_type: "general-purpose"` (they may need to read files)
-- `model: "sonnet"` (cost-effective; use `"opus"` only if user requests or problem is very complex)
+- `model: "haiku"` (cost-effective for proposals; use `"sonnet"` for complex problems, `"opus"` only if user requests)
 - Give each agent a `name` matching the persona (e.g., "sysops", "shield")
+
+**Coordination folder** — before spawning agents, create: `mkdir -p /tmp/forge-{short-topic}/proposals`
+Each proposer saves their proposal to `/tmp/forge-{short-topic}/proposals/{name}.md`
 
 ---
 
 ## Phase 2: Cross-Scoring (Parallel)
 
-After ALL 4 proposals are collected, spawn 4 NEW scoring agents in a SINGLE message.
+After ALL 4 proposals are collected (read from `/tmp/forge-{short-topic}/proposals/`), spawn 4 NEW scoring agents in a SINGLE message. Scorers use `model: "sonnet"` (need stronger reasoning for fair judgment).
 
 **Each scoring agent gets ALL proposals and this prompt:**
 
@@ -241,11 +244,13 @@ After all scores are in, YOU (the orchestrator) must:
 
 ---
 
-## Phase 4: Cleanup
+## Phase 4: Archive & Cleanup
 
-1. Shut down all agents: `SendMessage` with `type: "shutdown_request"` to each
-2. Delete the team: `TeamDelete`
-3. Report results to the user
+1. **Save session archive** to `~/.claude/forge-sessions/{YYYY-MM-DD}-{short-topic}.md` containing: problem, all proposals, scoreboard, winner, consensus, synthesis, and recommendation.
+2. **Clean up** coordination folder: `rm -rf /tmp/forge-{short-topic}/`
+3. Shut down all agents: `SendMessage` with `type: "shutdown_request"` to each
+4. Delete the team: `TeamDelete`
+5. Report results to the user (mention that the archive is saved for future reference)
 
 ---
 
